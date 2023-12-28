@@ -17,11 +17,11 @@ l = []
 def choose_difficulty(stdscr):
     global difficulty
     stdscr.clear()
-    stdscr.addstr(0, 0, "Choose difficulty (easy, medium, hard): ")
+    stdscr.addstr(0, 0, "Choose difficulty (easy, medium, hard): ", curses.color_pair(1))
     stdscr.refresh()
     difficulty = stdscr.getstr(1, 0).decode().lower()
     if difficulty not in word_list:
-        stdscr.addstr(2, 0, "Invalid difficulty. Defaulting to easy.")
+        stdscr.addstr(2, 0, "Invalid difficulty. Defaulting to easy.", curses.color_pair(1))
         stdscr.refresh()
         difficulty = 'easy'
 
@@ -94,72 +94,71 @@ def load_game():
 # Function to display the current progress of the word
 def display_word_progress(stdscr):
     progress = ''.join([letter if letter in l else '_' for letter in x])
-    stdscr.addstr(4, 0, f"Current progress: {progress}")
+    stdscr.addstr(4, 0, f"Current progress: {progress}", curses.color_pair(1))
     stdscr.refresh()
 
 # Multiplayer mode function
-def multiplayer_mode():
-    def multiplayer_mode(stdscr):
-        global count, score, x, l
-        players = int(stdscr.getstr(1, 0).decode())
-        player_scores = {f"Player {i + 1}": 0 for i in range(players)}
+def multiplayer_mode(stdscr):
+    global count, score, x, l
+    players = int(stdscr.getstr(1, 0).decode())
+    player_scores = {f"Player {i + 1}": 0 for i in range(players)}
 
     while True:
         for player in player_scores:
             stdscr.clear()
-            stdscr.addstr(0, 0, f"{player}'s turn:")
+            stdscr.addstr(0, 0, f"{player}'s turn:", curses.color_pair(1))
             stdscr.refresh()
             a = stdscr.getstr(1, 0).decode()
             count += 1
 
             z = api(a)
             if z:
-                stdscr.addstr(2, 0, 'The word is in the dictionary')
+                stdscr.addstr(2, 0, 'The word is in the dictionary', curses.color_pair(1))
                 stdscr.refresh()
                 if len(a) != len(x):
-                    stdscr.addstr(3, 0, f"The word does not contain {len(x)} letters")
+                    stdscr.addstr(3, 0, f"The word does not contain {len(x)} letters", curses.color_pair(1))
                     stdscr.refresh()
                 else:
                     for i in a:
                         p = check_word_in_position(a, i)
                         if p:
-                            stdscr.addstr(4, 0, p)
+                            stdscr.addstr(4, 0, p, curses.color_pair(1))
                             stdscr.refresh()
                     q = check_letter_in_word(a)
                     if q:
-                        stdscr.addstr(5, 0, q)
+                        stdscr.addstr(5, 0, q, curses.color_pair(1))
                         stdscr.refresh()
                     r = check_if_word_is_correct(a)
                     if r:
-                        stdscr.addstr(6, 0, r)
+                        stdscr.addstr(6, 0, r, curses.color_pair(1))
                         stdscr.refresh()
                         player_scores[player] += score
 
                     # Add scoring system
                     score += len(l) + len(set(a) & set(x)) - len(l)
-                    stdscr.addstr(7, 0, f"Current Score: {score}")
+                    stdscr.addstr(7, 0, f"Current Score: {score}", curses.color_pair(1))
                     stdscr.refresh()
 
                     if count == 6:
-                        stdscr.addstr(8, 0, 'You have used up your 6 tries')
-                        stdscr.addstr(9, 0, f'The correct word is {x}')
+                        stdscr.addstr(8, 0, 'You have used up your 6 tries', curses.color_pair(1))
+                        stdscr.addstr(9, 0, f'The correct word is {x}', curses.color_pair(1))
                         stdscr.refresh()
                         return player_scores
             else:
-                stdscr.addstr(2, 0, 'The word is not in the dictionary')
+                stdscr.addstr(2, 0, 'The word is not in the dictionary', curses.color_pair(1))
                 stdscr.refresh()
 
             # Add hint system
             hint = get_word_definition(x)
-            stdscr.addstr(10, 0, f"Hint: {hint}")
+            stdscr.addstr(10, 0, f"Hint: {hint}", curses.color_pair(1))
             stdscr.refresh()
 
             display_word_progress(stdscr)
 
             # Display scores after each round
-        stdscr.addstr(11, 0, "\nCurrent Scores:")
+        stdscr.addstr(11, 0, "\nCurrent Scores:", curses.color_pair(1))
         for idx, (player, player_score) in enumerate(player_scores.items(), start=12):
-            stdscr.addstr(idx, 0, f"{player}: {player_score}")
+            stdscr.addstr(idx, 0, f"{player}: {player_score}", curses.color_pair(1))
             stdscr.refresh()
 
         if count == 6:
@@ -167,17 +166,21 @@ def multiplayer_mode():
 
 def main(stdscr):
     global count, score, x, l
+    # Initialize colors
+    curses.start_color()
+    curses.init_pair(1, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+
     # Main game loop
     while True:
         stdscr.clear()
-        stdscr.addstr(0, 0, 'Enter the word: ')
+        stdscr.addstr(0, 0, 'Enter the word: ', curses.color_pair(1))
         stdscr.refresh()
         a = stdscr.getstr(1, 0).decode()
         count += 1
 
         # Choose difficulty at the start of the game
         if count == 1:
-            stdscr.addstr(2, 0, "Do you want to load a saved game? (yes/no): ")
+            stdscr.addstr(2, 0, "Do you want to load a saved game? (yes/no): ", curses.color_pair(1))
             stdscr.refresh()
             choice = stdscr.getstr(3, 0).decode().lower()
             if choice == 'yes':
@@ -188,51 +191,51 @@ def main(stdscr):
 
         z = api(a)
         if z:
-            stdscr.addstr(2, 0, 'The word is in the dictionary')
+            stdscr.addstr(2, 0, 'The word is in the dictionary', curses.color_pair(1))
             stdscr.refresh()
             if len(a) != len(x):
-                stdscr.addstr(3, 0, f"The word does not contain {len(x)} letters")
+                stdscr.addstr(3, 0, f"The word does not contain {len(x)} letters", curses.color_pair(1))
                 stdscr.refresh()
             else:
                 for i in a:
                     p = check_word_in_position(a, i)
                     if p:
-                        stdscr.addstr(4, 0, p)
+                        stdscr.addstr(4, 0, p, curses.color_pair(1))
                         stdscr.refresh()
                 q = check_letter_in_word(a)
                 if q:
-                    stdscr.addstr(5, 0, q)
+                    stdscr.addstr(5, 0, q, curses.color_pair(1))
                     stdscr.refresh()
                 r = check_if_word_is_correct(a)
                 if r:
-                    stdscr.addstr(6, 0, r)
+                    stdscr.addstr(6, 0, r, curses.color_pair(1))
                     stdscr.refresh()
                     break
 
                 # Add scoring system
                 score += len(l) + len(set(a) & set(x)) - len(l)
-                stdscr.addstr(7, 0, f"Current Score: {score}")
+                stdscr.addstr(7, 0, f"Current Score: {score}", curses.color_pair(1))
                 stdscr.refresh()
 
                 if count == 6:
-                    stdscr.addstr(8, 0, 'You have used up your 6 tries')
-                    stdscr.addstr(9, 0, f'The correct word is {x}')
+                    stdscr.addstr(8, 0, 'You have used up your 6 tries', curses.color_pair(1))
+                    stdscr.addstr(9, 0, f'The correct word is {x}', curses.color_pair(1))
                     stdscr.refresh()
                     break
         else:
-            stdscr.addstr(2, 0, 'The word is not in the dictionary')
+            stdscr.addstr(2, 0, 'The word is not in the dictionary', curses.color_pair(1))
             stdscr.refresh()
 
         # Add hint system
         hint = get_word_definition(x)
-        stdscr.addstr(10, 0, f"Hint: {hint}")
+        stdscr.addstr(10, 0, f"Hint: {hint}", curses.color_pair(1))
         stdscr.refresh()
 
         display_word_progress(stdscr)
 
         # Save game option
         if count == 3:
-            stdscr.addstr(11, 0, "Do you want to save the game? (yes/no): ")
+            stdscr.addstr(11, 0, "Do you want to save the game? (yes/no): ", curses.color_pair(1))
             stdscr.refresh()
             choice = stdscr.getstr(12, 0).decode().lower()
             if choice == 'yes':
@@ -240,19 +243,19 @@ def main(stdscr):
 
     # Multiplayer mode
     if count > 6: # Allow multiplayer mode only after a single-player round
-        stdscr.addstr(13, 0, "\nStarting Multiplayer Mode:")
+        stdscr.addstr(13, 0, "\nStarting Multiplayer Mode:", curses.color_pair(1))
         stdscr.refresh()
         multiplayer_scores = multiplayer_mode(stdscr)
 
         # Display final scores for multiplayer mode
-        stdscr.addstr(15, 0, "\nFinal Scores:")
+        stdscr.addstr(15, 0, "\nFinal Scores:", curses.color_pair(1))
         stdscr.refresh()
         for idx, (player, player_score) in enumerate(multiplayer_scores.items(), start=16):
-            stdscr.addstr(idx, 0, f"{player}: {player_score}")
+            stdscr.addstr(idx, 0, f"{player}: {player_score}", curses.color_pair(1))
             stdscr.refresh()
 
     # End of the game
-    stdscr.addstr(18, 0, "Game Over. Thanks for playing!")
+    stdscr.addstr(18, 0, "Game Over. Thanks for playing!", curses.color_pair(1))
     stdscr.refresh()
     stdscr.getch()
 
