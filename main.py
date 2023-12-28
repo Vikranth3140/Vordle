@@ -12,6 +12,7 @@ difficulty = 'easy'
 x = random.choice(word_list[difficulty])
 l = []
 
+# Function to choose the difficulty level
 def choose_difficulty():
     global difficulty
     difficulty = input("Choose difficulty (easy, medium, hard): ").lower()
@@ -19,6 +20,7 @@ def choose_difficulty():
         print("Invalid difficulty. Defaulting to easy.")
         difficulty = 'easy'
 
+# Function to fetch the definition of a word using the Oxford Dictionaries API
 def get_word_definition(word):
     app_id = "ccc28cad"
     app_key = "5000c84ad7d2c2776572066bea7cc792"
@@ -32,6 +34,7 @@ def get_word_definition(word):
     else:
         return "No definition available."
 
+# Function to check if a word is in the dictionary using the Oxford Dictionaries API
 def api(a):
     app_id = "ccc28cad"
     app_key = "5000c84ad7d2c2776572066bea7cc792"
@@ -41,12 +44,14 @@ def api(a):
     r = requests.get(url, headers={"app_id": app_id, "app_key": app_key})
     return a in r.text
 
+# Function to check if a letter is in the correct position of the word
 def check_word_in_position(user_input, letter):
     a = user_input.index(letter)
     if user_input[a] == x[a]:
         l.append(letter)
         return f"{letter} is in the word and in the correct position"
 
+# Function to check if a letter is in the word but in the wrong position
 def check_letter_in_word(a):
     for i in a:
         if i in l:
@@ -55,15 +60,17 @@ def check_letter_in_word(a):
             w = i
             return f"{w} is in the word but in the wrong position"
 
+# Function to check if the entered word is correct
 def check_if_word_is_correct(a):
     return "The word is correct" if a == x else None
 
-# Save and load game functions
+# Function to save the game data to a JSON file
 def save_game():
     data = {'difficulty': difficulty, 'score': score, 'count': count, 'word_list': word_list, 'x': x, 'l': l}
     with open('save_game.json', 'w') as file:
         json.dump(data, file)
 
+# Function to load the game data from a saved JSON file
 def load_game():
     global difficulty, score, count, word_list, x, l
     try:
@@ -79,11 +86,14 @@ def load_game():
     except FileNotFoundError:
         print("No saved game found.")
 
+# Function to display the current progress of the word
 def display_word_progress():
     progress = ''.join([letter if letter in l else '_' for letter in x])
     print(f"Current progress: {progress}")
 
+# Multiplayer mode function
 def multiplayer_mode():
+    global count, score, x, l
     players = int(input("Enter the number of players: "))
     player_scores = {f"Player {i + 1}": 0 for i in range(players)}
 
@@ -118,7 +128,7 @@ def multiplayer_mode():
                 if count == 6:
                     print('You have used up your 6 tries')
                     print('The correct word is', x)
-                    break
+                    return player_scores
             else:
                 print('The word is not in the dictionary')
 
@@ -190,3 +200,16 @@ while True:
         choice = input("Do you want to save the game? (yes/no): ").lower()
         if choice == 'yes':
             save_game()
+
+# Multiplayer mode
+if count > 6:  # Allow multiplayer mode only after a single-player round
+    print("\nStarting Multiplayer Mode:")
+    multiplayer_scores = multiplayer_mode()
+
+    # Display final scores for multiplayer mode
+    print("\nFinal Scores:")
+    for player, player_score in multiplayer_scores.items():
+        print(f"{player}: {player_score}")
+
+# End of the game
+print("Game Over. Thanks for playing!")
