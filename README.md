@@ -26,13 +26,13 @@ Installation
 1.  Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/vordle-game.git
+git clone https://github.com/Vikranth3140/Vordle.git
 ```
 
 2.  Change Directory to the game:
 
 ```bash
-cd vordle
+cd Vordle
 ```
 
 3.  Install the required dependencies:
@@ -47,7 +47,7 @@ Usage
 1.  Run the game:
 
 ```bash
-python vordle_game.py
+python main.py
 ```
 
 2.  Follow the on-screen instructions to play the game.
